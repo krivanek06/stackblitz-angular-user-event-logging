@@ -1,10 +1,16 @@
 export type LogEventAction =
   | {
-      type: 'buttonClick';
+      type: 'focusElement';
+      element: string;
+    }
+  | {
+      type: 'blurElement';
+      element: string;
       text: string;
     }
   | {
-      type: 'anchorClick';
+      type: 'clickElement';
+      element: string;
       text: string;
     }
   | {
@@ -26,15 +32,6 @@ export type LogEventAction =
       type: 'apiResponse';
       url: string;
       status: number;
-    }
-  | {
-      type: 'formControlClick';
-      name: string;
-    }
-  | {
-      type: 'activeCheckOrRadio';
-      name: string;
-      isChecked: boolean;
     }
   | {
       type: 'formSubmitValid';

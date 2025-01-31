@@ -81,53 +81,6 @@ export class UserEventTrackerService {
 
   userEventChangeOnPageee = effect(() => console.log(this.userEventChangeOnPage()));
 
-  start(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.document.addEventListener('click', (event: FocusEvent) => {
-        const castedTarget: HTMLElement = event.target as HTMLElement;
-        const formControlRegex: RegExp = /formcontrolname="([^"]*)"/;
-        const matButtonRegex: RegExp = /mat-mdc-button/gi;
-
-        const formControlNameArr = (event.target as HTMLElement)?.outerHTML.match(
-          formControlRegex,
-        );
-        const matButtonArr = (event.target as HTMLElement)?.outerHTML.match(
-          matButtonRegex,
-        );
-
-        console.log('castedTarget', castedTarget);
-        // form control click
-        if (formControlNameArr && formControlNameArr[1]) {
-          this.userEventChange$.next({
-            type: 'formControlClick',
-            name: formControlNameArr[1],
-          });
-        }
-        // mat-button is clicked
-        else if (matButtonArr?.[0]) {
-          this.userEventChange$.next({
-            type: 'buttonClick',
-            text: castedTarget.parentElement?.innerText ?? '',
-          });
-        }
-        // normal button click
-        else if (castedTarget.tagName === 'BUTTON') {
-          this.userEventChange$.next({
-            type: 'buttonClick',
-            text: castedTarget.innerText,
-          });
-        }
-        // anchor tag click
-        else if (castedTarget.tagName === 'A') {
-          this.userEventChange$.next({
-            type: 'anchorClick',
-            text: castedTarget.innerText,
-          });
-        }
-      });
-    });
-  }
-
   saveLogs(): void {
     const logChunks: number = 120;
     const logFormatChunks = this.userEventChangeOnPage()
@@ -167,9 +120,9 @@ export class UserEventTrackerService {
    */
   private sortLogsByPriority(logs: UserEvent[]): UserEvent[] {
     return logs.sort((a, b) => {
-      if (a.time === b.time) {
-        return a.type === 'buttonClick' ? -1 : 1;
-      }
+      // if (a.time === b.time) {
+      //   return a.type === 'buttonClick' ? -1 : 1;
+      // }
 
       return a.time < b.time ? -1 : 1;
     });

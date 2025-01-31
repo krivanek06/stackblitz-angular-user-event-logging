@@ -21,10 +21,6 @@ import {
 export class App {
   private readonly userEventTrackerService = inject(UserEventTrackerService);
 
-  constructor() {
-    this.userEventTrackerService.start();
-  }
-
   @HostListener('window:beforeunload')
   onPageRefresh() {
     this.userEventTrackerService.saveLogs();

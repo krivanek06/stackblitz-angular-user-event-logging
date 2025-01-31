@@ -1,11 +1,19 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  TemplateRef,
+  viewChild,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
-import { FormSubmitDirective } from '../../user-event-tracker';
+import { UserEventTrackerModule } from '../../user-event-tracker';
 
 @Component({
   selector: 'app-page-welcome',
@@ -15,7 +23,9 @@ import { FormSubmitDirective } from '../../user-event-tracker';
     MatButtonModule,
     MatInputModule,
     MatButtonModule,
-    FormSubmitDirective,
+    MatSelectModule,
+    UserEventTrackerModule,
+    MatDialogModule,
   ],
   styles: [
     `
@@ -32,6 +42,14 @@ import { FormSubmitDirective } from '../../user-event-tracker';
   ],
   standalone: true,
   template: `
+    <h1 class="text-xl">Welcome Form</h1>
+
+    <div>
+      More info about the form:
+      <a href="#" (click)="$event.preventDefault()">reactive-forms</a>
+      or open dialog <button mat-button (click)="openDialog()">open dialog</button>
+    </div>
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="grid gap-4">
       <!-- email -->
       <mat-form-field>
@@ -56,7 +74,10 @@ import { FormSubmitDirective } from '../../user-event-tracker';
 
         <mat-form-field>
           <mat-label>Gender</mat-label>
-          <input matInput formControlName="gender" />
+          <mat-select formControlName="gender">
+            <mat-option value="man">Man</mat-option>
+            <mat-option value="woman">Woman</mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
 
@@ -80,6 +101,14 @@ import { FormSubmitDirective } from '../../user-event-tracker';
 
       <button mat-stroked-button type="submit">Submit</button>
     </form>
+
+    <!-- dialog template -->
+    <ng-template #dialogTemplate>
+      <mat-dialog-content>
+        <h1>Dialog</h1>
+        <p>Dialog content</p>
+      </mat-dialog-content>
+    </ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -87,6 +116,9 @@ export class PageWelcomeComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
+  private readonly dialog = inject(MatDialog);
+
+  readonly dialogTemplate = viewChild<TemplateRef<HTMLElement>>('dialogTemplate');
 
   readonly form = this.fb.nonNullable.group({
     email: this.fb.nonNullable.control('', [Validators.required, Validators.email]),
@@ -119,5 +151,9 @@ export class PageWelcomeComponent {
       console.log('res', res);
       this.router.navigate(['/thank-you']);
     });
+  }
+
+  openDialog() {
+    this.dialog.open(this.dialogTemplate()!);
   }
 }

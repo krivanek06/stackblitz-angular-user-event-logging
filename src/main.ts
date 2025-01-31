@@ -1,18 +1,45 @@
 import { Component } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideRouter, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
+  imports: [RouterModule],
+  standalone: true,
   template: `
-    <div class="h-[20px] bg-red-300 p-4">
-      Hello from
-      {{ name }}!
+    <div class="mt-[200px]">
+      <router-outlet />
     </div>
-    <a target="_blank" href="https://angular.dev/overview"> Learn more about Angular </a>
   `,
 })
 export class App {
   name = 'ee';
 }
 
-bootstrapApplication(App);
+bootstrapApplication(App, {
+  providers: [
+    provideRouter([
+      {
+        path: '',
+        redirectTo: '/welcome',
+        pathMatch: 'full',
+      },
+      {
+        path: 'welcome',
+        loadComponent: () =>
+          import('./pages/page-welcome/page-welcome.component').then(
+            (m) => m.PageWelcomeComponent,
+          ),
+      },
+      {
+        path: 'thank-you',
+        loadComponent: () =>
+          import('./pages/page-thank-you/page-thank-you.component').then(
+            (m) => m.PageThankYouComponent,
+          ),
+      },
+    ]),
+    provideAnimationsAsync(),
+  ],
+});

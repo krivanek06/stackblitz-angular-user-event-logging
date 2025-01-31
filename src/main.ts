@@ -1,8 +1,12 @@
-import { provideHttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { Component, HostListener, inject } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, RouterModule } from '@angular/router';
+import {
+  userEventLoggingInterceptorProvider,
+  UserEventTrackerService,
+} from './user-event-tracker';
 
 @Component({
   selector: 'app-root',
@@ -15,12 +19,21 @@ import { provideRouter, RouterModule } from '@angular/router';
   `,
 })
 export class App {
-  name = 'ee';
+  private readonly userEventTrackerService = inject(UserEventTrackerService);
+
+  constructor() {
+    this.userEventTrackerService.start();
+  }
+
+  @HostListener('window:beforeunload')
+  onPageRefresh() {
+    this.userEventTrackerService.saveLogs();
+  }
 }
 
 bootstrapApplication(App, {
   providers: [
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([userEventLoggingInterceptorProvider])),
     provideRouter([
       {
         path: '',
@@ -40,6 +53,10 @@ bootstrapApplication(App, {
           import('./pages/page-thank-you/page-thank-you.component').then(
             (m) => m.PageThankYouComponent,
           ),
+      },
+      {
+        path: '**',
+        redirectTo: '/welcome',
       },
     ]),
     provideAnimationsAsync(),

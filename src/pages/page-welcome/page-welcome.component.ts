@@ -115,7 +115,9 @@ export class PageWelcomeComponent {
     }
 
     const url = 'https://jsonplaceholder.typicode.com/posts';
-
-    this.router.navigate(['/thank-you']);
+    this.http.post(url, this.form.value).subscribe((res) => {
+      console.log('res', res);
+      this.router.navigate(['/thank-you']);
+    });
   }
 }

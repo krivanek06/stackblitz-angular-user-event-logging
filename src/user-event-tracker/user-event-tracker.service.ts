@@ -1,9 +1,9 @@
 import { DOCUMENT } from '@angular/common';
-import { inject, Injectable, NgZone } from '@angular/core';
+import { effect, inject, Injectable, NgZone } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
-import { NavigationStart, Router } from '@angular/router';
-import { filter, map, merge, pairwise, scan, Subject } from 'rxjs';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter, map, merge, scan, Subject } from 'rxjs';
 import { LogEventAction, UserEvent } from './user-event-tracker';
 
 @Injectable({
@@ -30,10 +30,8 @@ export class UserEventTrackerService {
    * navigation change: page1 -> page2
    */
   private readonly routerChange$ = this.router.events.pipe(
-    filter((event): event is NavigationStart => event instanceof NavigationStart),
-    map((routerData) => routerData['url']),
-    pairwise(),
-    map((routes) => routes.join(' -> ')),
+    filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+    map((routerData) => `${routerData['url']} -> ${routerData['urlAfterRedirects']}`),
   );
 
   /**
@@ -81,26 +79,46 @@ export class UserEventTrackerService {
     { initialValue: [] },
   );
 
+  userEventChangeOnPageee = effect(() => console.log(this.userEventChangeOnPage()));
+
   start(): void {
     this.ngZone.runOutsideAngular(() => {
       this.document.addEventListener('click', (event: FocusEvent) => {
         const castedTarget: HTMLElement = event.target as HTMLElement;
-        const formControlRegex: RegExp = /data-formcontrolname="([^"]*)"/;
+        const formControlRegex: RegExp = /formcontrolname="([^"]*)"/;
+        const matButtonRegex: RegExp = /mat-mdc-button/gi;
+
         const formControlNameArr = (event.target as HTMLElement)?.outerHTML.match(
           formControlRegex,
         );
+        const matButtonArr = (event.target as HTMLElement)?.outerHTML.match(
+          matButtonRegex,
+        );
 
+        console.log('castedTarget', castedTarget);
+        // form control click
         if (formControlNameArr && formControlNameArr[1]) {
           this.userEventChange$.next({
             type: 'formControlClick',
             name: formControlNameArr[1],
           });
-        } else if (castedTarget.tagName === 'BUTTON') {
+        }
+        // mat-button is clicked
+        else if (matButtonArr?.[0]) {
+          this.userEventChange$.next({
+            type: 'buttonClick',
+            text: castedTarget.parentElement?.innerText ?? '',
+          });
+        }
+        // normal button click
+        else if (castedTarget.tagName === 'BUTTON') {
           this.userEventChange$.next({
             type: 'buttonClick',
             text: castedTarget.innerText,
           });
-        } else if (castedTarget.tagName === 'A') {
+        }
+        // anchor tag click
+        else if (castedTarget.tagName === 'A') {
           this.userEventChange$.next({
             type: 'anchorClick',
             text: castedTarget.innerText,

@@ -1,8 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { Router } from '@angular/router';
+import { FormSubmitDirective } from '../../user-event-tracker';
 
 @Component({
   selector: 'app-page-welcome',
@@ -12,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
     MatButtonModule,
     MatInputModule,
     MatButtonModule,
+    FormSubmitDirective,
   ],
   styles: [
     `
@@ -81,6 +85,9 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class PageWelcomeComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
+
   readonly form = this.fb.nonNullable.group({
     email: this.fb.nonNullable.control('', [Validators.required, Validators.email]),
     password: this.fb.nonNullable.control('', [Validators.required, Validators.min(8)]),
@@ -100,6 +107,15 @@ export class PageWelcomeComponent {
   });
 
   onSubmit() {
-    console.log(this.form.value);
+    console.log('submitted in welcome');
+    this.form.markAllAsTouched();
+
+    if (!this.form.valid) {
+      return;
+    }
+
+    const url = 'https://jsonplaceholder.typicode.com/posts';
+
+    this.router.navigate(['/thank-you']);
   }
 }

@@ -1,8 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, Injectable, NgZone } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { NavigationStart, Router, Event as RouterEvent } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { NavigationStart, Router } from '@angular/router';
 import { filter, map, merge, pairwise, scan, Subject } from 'rxjs';
 import { LogEventAction, UserEvent } from './user-event-tracker';
 

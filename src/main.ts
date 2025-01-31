@@ -4,15 +4,15 @@ import { bootstrapApplication } from '@angular/platform-browser';
 @Component({
   selector: 'app-root',
   template: `
-    <h1>
+    <div class="h-[20px] bg-red-300 p-4">
       Hello from
       {{ name }}!
-    </h1>
+    </div>
     <a target="_blank" href="https://angular.dev/overview"> Learn more about Angular </a>
   `,
 })
 export class App {
-  name = 'aa';
+  name = 'ee';
 }
 
 bootstrapApplication(App);

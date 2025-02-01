@@ -10,6 +10,7 @@ import { UserEventTrackerService } from './user-event-tracker.service';
  * track form submission
  */
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'form[formGroup]',
   standalone: true,
 })
@@ -41,6 +42,7 @@ export class FormSubmitDirective {
 // ----------------------------
 
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'input, textarea',
   standalone: true,
 })
@@ -84,6 +86,7 @@ export class EventInputsDirective {
 // ----------------------------
 
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'mat-select',
   standalone: true,
 })
@@ -108,6 +111,7 @@ export class EventSelectsDirective {
 // ----------------------------
 
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'button, a',
   standalone: true,
 })
@@ -132,6 +136,7 @@ export class EventButtonDirective {
 // ----------------------------
 
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'mat-radio-group',
   standalone: true,
 })
@@ -155,6 +160,7 @@ export class EventButtonRadioDirective {
 // ----------------------------
 
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'mat-checkbox',
   standalone: true,
 })

@@ -5,6 +5,11 @@ type ValidationState =
   | 'INVALID'
   | { [key: string]: ValidationState }
   | ValidationState[];
+
+/**
+ * Get the validation state of a form control
+ * @returns the form object where each key is the control name and the value is the validation state - 'VALID' or 'INVALID'
+ */
 export const getFormValidationState = (form: AbstractControl): ValidationState => {
   if (form instanceof FormControl) {
     return form.valid ? 'VALID' : 'INVALID';

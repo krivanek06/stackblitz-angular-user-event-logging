@@ -74,7 +74,7 @@ export class UserEventTrackerService {
     { initialValue: [] },
   );
 
-  accumulatedLogsEff = effect(() => console.log(this.accumulatedLogs()));
+  readonly accumulatedLogsEff = effect(() => console.log(this.accumulatedLogs()));
 
   saveLogs(): void {
     const logChunks: number = 120;
@@ -120,7 +120,7 @@ export class UserEventTrackerService {
         ...(xsrfToken ? { 'X-XSRF-TOKEN': xsrfToken } : {}),
       },
       credentials: 'include',
-      keepalive: true,
+      keepalive: true, // keep the connection alive when app closes
       body: JSON.stringify(body),
     });
   }

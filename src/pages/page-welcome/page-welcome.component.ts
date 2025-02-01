@@ -1,16 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  TemplateRef,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, TemplateRef, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { UserEventTrackerModule } from '../../user-event-tracker';
@@ -26,12 +22,14 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
     MatSelectModule,
     UserEventTrackerModule,
     MatDialogModule,
+    MatRadioModule,
+    MatCheckboxModule,
   ],
   styles: [
     `
       :host {
         display: block;
-        width: 80%;
+        max-width: 700px;
         margin: 0 auto;
       }
 
@@ -45,7 +43,7 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
     <h1 class="text-xl">Welcome Form</h1>
 
     <div>
-      More info about the form:
+      Link:
       <a href="#" (click)="$event.preventDefault()">reactive-forms</a>
       or open dialog <button mat-button (click)="openDialog()">open dialog</button>
     </div>
@@ -54,13 +52,13 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
       <!-- email -->
       <mat-form-field>
         <mat-label>Email</mat-label>
-        <input matInput formControlName="email" />
+        <input aria-label="Email" matInput formControlName="email" />
       </mat-form-field>
 
       <!-- password -->
       <mat-form-field>
         <mat-label>Password</mat-label>
-        <input matInput formControlName="password" />
+        <input aria-label="Password" matInput formControlName="password" />
       </mat-form-field>
 
       <!-- character -->
@@ -69,12 +67,12 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
 
         <mat-form-field>
           <mat-label>Username</mat-label>
-          <input matInput formControlName="username" />
+          <input aria-label="Password" matInput formControlName="username" />
         </mat-form-field>
 
         <mat-form-field>
           <mat-label>Gender</mat-label>
-          <mat-select formControlName="gender">
+          <mat-select aria-label="Gender" formControlName="gender">
             <mat-option value="man">Man</mat-option>
             <mat-option value="woman">Woman</mat-option>
           </mat-select>
@@ -88,18 +86,36 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
           <div [formGroupName]="i" class="flex gap-6">
             <mat-form-field>
               <mat-label>Name</mat-label>
-              <input matInput formControlName="name" />
+              <input aria-label="ItemName" matInput formControlName="name" />
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>Quantity</mat-label>
-              <input matInput formControlName="quantity" />
+              <input aria-label="ItemName" matInput formControlName="quantity" />
             </mat-form-field>
           </div>
         }
       </div>
 
-      <button mat-stroked-button type="submit">Submit</button>
+      <!-- example html elements -->
+      <div class="border p-4">
+        <h2>Example HTML elements</h2>
+        <mat-radio-group>
+          <mat-radio-button aria-label="RadioLabel 1" value="1">Option 1</mat-radio-button>
+          <mat-radio-button aria-label="RadioLabel 1" value="2">Option 2</mat-radio-button>
+        </mat-radio-group>
+
+        <mat-radio-group>
+          <mat-radio-button aria-label="RadioLabel 2" value="3">Option 3</mat-radio-button>
+          <mat-radio-button aria-label="RadioLabel 2" value="4">Option 4</mat-radio-button>
+        </mat-radio-group>
+
+        <div>
+          <mat-checkbox aria-label="Checkbox LABEL">Check me!</mat-checkbox>
+        </div>
+      </div>
+
+      <button aria-label="SubmitButton" mat-stroked-button type="submit">Submit</button>
     </form>
 
     <!-- dialog template -->
@@ -130,10 +146,7 @@ export class PageWelcomeComponent {
     initialItems: this.fb.nonNullable.array([
       this.fb.nonNullable.group({
         name: this.fb.nonNullable.control('', [Validators.required]),
-        quantity: this.fb.nonNullable.control('', [
-          Validators.required,
-          Validators.min(1),
-        ]),
+        quantity: this.fb.nonNullable.control('', [Validators.required, Validators.min(1)]),
       }),
     ]),
   });

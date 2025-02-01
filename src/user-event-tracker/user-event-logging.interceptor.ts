@@ -8,6 +8,9 @@ import { inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { UserEventTrackerService } from './user-event-tracker.service';
 
+/**
+ * listen to http events and log them
+ */
 export const userEventLoggingInterceptorProvider = (
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,

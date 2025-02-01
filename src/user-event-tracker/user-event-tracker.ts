@@ -3,7 +3,7 @@ export type LogEventAction =
       type: 'inputChange';
       elementType: string;
       elementLabel: string;
-      value: string;
+      value: string | boolean | number;
     }
   | {
       type: 'clickElement';

@@ -1,5 +1,7 @@
 import { Directive, HostListener, inject, NgModule } from '@angular/core';
 import { FormGroupDirective } from '@angular/forms';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatRadioChange } from '@angular/material/radio';
 import { MatSelectChange } from '@angular/material/select';
 import { getFormValidationState } from './user-event-logging.utils';
 import { UserEventTrackerService } from './user-event-tracker.service';
@@ -36,6 +38,8 @@ export class FormSubmitDirective {
   }
 }
 
+// ----------------------------
+
 @Directive({
   selector: 'input, textarea',
   standalone: true,
@@ -57,7 +61,8 @@ export class EventInputsDirective {
     const inputTarget = event.target as HTMLInputElement | HTMLTextAreaElement;
     const newValue = inputTarget.value;
     const prevValue = this.previousValue;
-    const labelName = inputTarget?.labels?.[0]?.innerText?.trim() ?? 'Unknown';
+    // const labelName = inputTarget?.labels?.[0]?.innerText?.trim() ?? 'Unknown';
+    const labelName = inputTarget.ariaLabel ?? inputTarget?.labels?.[0]?.innerText?.trim() ?? 'Unknown';
 
     // same value, no need to log
     if (newValue === prevValue) {
@@ -76,6 +81,8 @@ export class EventInputsDirective {
   }
 }
 
+// ----------------------------
+
 @Directive({
   selector: 'mat-select',
   standalone: true,
@@ -86,12 +93,8 @@ export class EventSelectsDirective {
   @HostListener('selectionChange', ['$event'])
   onSelectionChange(event: MatSelectChange) {
     const selectedValue = event.value;
-    const nativeEl = event.source._elementRef.nativeElement;
-    const label =
-      nativeEl
-        ?.closest('mat-form-field')
-        ?.querySelector('mat-label')
-        ?.textContent?.trim() ?? 'Unknown';
+    // const label = event.source._elementRef.nativeElement.previousElementSibling.innerText;
+    const label = event.source.ariaLabel;
 
     this.userEventTrackerService.accumulateLog$.next({
       type: 'inputChange',
@@ -101,6 +104,8 @@ export class EventSelectsDirective {
     });
   }
 }
+
+// ----------------------------
 
 @Directive({
   selector: 'button, a',
@@ -114,22 +119,71 @@ export class EventButtonDirective {
     const inputTarget = event.target as HTMLElement;
 
     // mat-button is represented as 'span'
-    const usedTarget =
-      inputTarget.tagName === 'SPAN' ? inputTarget.parentElement : inputTarget;
+    const usedTarget = inputTarget.tagName === 'SPAN' ? inputTarget.parentElement : inputTarget;
 
     this.userEventTrackerService.accumulateLog$.next({
       type: 'clickElement',
       elementType: usedTarget?.tagName ?? '',
-      value: usedTarget?.innerText ?? '',
+      value: usedTarget?.ariaLabel || usedTarget?.innerText || 'Unknown',
     });
   }
 }
+
+// ----------------------------
+
+@Directive({
+  selector: 'mat-radio-group',
+  standalone: true,
+})
+export class EventButtonRadioDirective {
+  private readonly userEventTrackerService = inject(UserEventTrackerService);
+
+  @HostListener('change', ['$event'])
+  onChange(event: MatRadioChange) {
+    const value = event.value;
+    const label = event.source.ariaLabel;
+
+    this.userEventTrackerService.accumulateLog$.next({
+      type: 'inputChange',
+      elementType: 'MAT-RADIO',
+      elementLabel: label,
+      value: value,
+    });
+  }
+}
+
+// ----------------------------
+
+@Directive({
+  selector: 'mat-checkbox',
+  standalone: true,
+})
+export class EventCheckboxDirective {
+  private readonly userEventTrackerService = inject(UserEventTrackerService);
+
+  @HostListener('change', ['$event'])
+  onChange(event: MatCheckboxChange) {
+    const value = event.checked;
+    const label = event.source.ariaLabel;
+
+    this.userEventTrackerService.accumulateLog$.next({
+      type: 'inputChange',
+      elementType: 'MAT-CHECKBOX',
+      elementLabel: label,
+      value: value,
+    });
+  }
+}
+
+// ----------------------------
 
 const directives = [
   FormSubmitDirective,
   EventInputsDirective,
   EventButtonDirective,
   EventSelectsDirective,
+  EventButtonRadioDirective,
+  EventCheckboxDirective,
 ];
 
 @NgModule({

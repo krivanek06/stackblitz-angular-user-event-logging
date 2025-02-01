@@ -7,4 +7,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   template: `<p>page-thank-you works!</p>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PageThankYouComponent {}
+export class PageThankYouComponent {
+  // todo - display logs in json
+}

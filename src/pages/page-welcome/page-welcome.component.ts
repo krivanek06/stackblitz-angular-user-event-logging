@@ -139,7 +139,6 @@ export class PageWelcomeComponent {
   });
 
   onSubmit() {
-    console.log('submitted in welcome');
     this.form.markAllAsTouched();
 
     if (!this.form.valid) {
@@ -147,8 +146,8 @@ export class PageWelcomeComponent {
     }
 
     const url = 'https://jsonplaceholder.typicode.com/posts';
-    this.http.post(url, this.form.value).subscribe((res) => {
-      console.log('res', res);
+
+    this.http.post(url, this.form.value).subscribe(() => {
       this.router.navigate(['/thank-you']);
     });
   }

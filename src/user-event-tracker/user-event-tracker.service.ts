@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { effect, inject, Injectable, NgZone } from '@angular/core';
+import { effect, inject, Injectable } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
@@ -10,16 +9,13 @@ import { LogEventAction, UserEvent } from './user-event-tracker';
   providedIn: 'root',
 })
 export class UserEventTrackerService {
-  private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
-  // private readonly store = inject(Store);
   private readonly dialog = inject(MatDialog);
-  private readonly ngZone = inject(NgZone);
 
   /**
    * trigger when an user event happens that we want to log
    */
-  readonly userEventChange$ = new Subject<LogEventAction>();
+  readonly accumulateLog$ = new Subject<LogEventAction>();
 
   /**
    * trigger to reset the accumulated logs
@@ -27,21 +23,21 @@ export class UserEventTrackerService {
   private readonly resetLogs$ = new Subject<void>();
 
   /**
-   * navigation change: page1 -> page2
+   * navigation change: page1
    */
   private readonly routerChange$ = this.router.events.pipe(
     filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-    map((routerData) => `${routerData['url']} -> ${routerData['urlAfterRedirects']}`),
+    map((routerData) => routerData['url']),
   );
 
   /**
    * accumulate every user event that happens on a page
    */
-  private readonly userEventChangeOnPage = toSignal(
+  private readonly accumulatedLogs = toSignal(
     merge(
       merge(
         // saved triggered logs by the app
-        this.userEventChange$.pipe(map((action) => this.createLogFormat(action))),
+        this.accumulateLog$.pipe(map((action) => this.createLogFormat(action))),
         // open dialog log
         this.dialog.afterOpened.pipe(
           map((dialogRef) =>
@@ -74,16 +70,15 @@ export class UserEventTrackerService {
         (acc, curr) => (curr.type === 'add' ? [...acc, curr.action] : []),
         [] as UserEvent[],
       ),
-      map((logs) => this.sortLogsByPriority(logs)),
     ),
     { initialValue: [] },
   );
 
-  userEventChangeOnPageee = effect(() => console.log(this.userEventChangeOnPage()));
+  accumulatedLogsEff = effect(() => console.log(this.accumulatedLogs()));
 
   saveLogs(): void {
     const logChunks: number = 120;
-    const logFormatChunks = this.userEventChangeOnPage()
+    const logFormatChunks = this.accumulatedLogs()
       .reduce((acc: UserEvent[][], curr: UserEvent, index: number) => {
         if (index % logChunks === 0) {
           acc.push([]);
@@ -113,19 +108,6 @@ export class UserEventTrackerService {
       time: new Date().toLocaleTimeString(),
       page: this.router.url,
     };
-  }
-
-  /**
-   * sort logs by time and then prioritize buttonClick if time is the same
-   */
-  private sortLogsByPriority(logs: UserEvent[]): UserEvent[] {
-    return logs.sort((a, b) => {
-      // if (a.time === b.time) {
-      //   return a.type === 'buttonClick' ? -1 : 1;
-      // }
-
-      return a.time < b.time ? -1 : 1;
-    });
   }
 
   private sendToRemoteByFetch(body: unknown): void {

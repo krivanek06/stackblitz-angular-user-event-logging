@@ -18,14 +18,14 @@ export const userEventLoggingInterceptorProvider = (
     tap((event) => {
       // send http event
       if (event.type === HttpEventType.Sent) {
-        trackingService.userEventChange$.next({
+        trackingService.accumulateLog$.next({
           type: 'apiCall',
           url: req.urlWithParams,
         });
       }
       // receive http event
       else if (event.type === HttpEventType.Response) {
-        trackingService.userEventChange$.next({
+        trackingService.accumulateLog$.next({
           type: 'apiResponse',
           url: req.urlWithParams,
           status: event.status,

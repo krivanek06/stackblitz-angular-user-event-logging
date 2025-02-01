@@ -1,17 +1,14 @@
 export type LogEventAction =
   | {
-      type: 'focusElement';
-      element: string;
-    }
-  | {
-      type: 'blurElement';
-      element: string;
-      text: string;
+      type: 'inputChange';
+      elementType: string;
+      elementLabel: string;
+      value: string;
     }
   | {
       type: 'clickElement';
-      element: string;
-      text: string;
+      elementType: string;
+      value: string;
     }
   | {
       type: 'openDialog';

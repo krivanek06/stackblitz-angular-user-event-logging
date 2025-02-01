@@ -1,5 +1,6 @@
 import { Directive, HostListener, inject, NgModule } from '@angular/core';
 import { FormGroupDirective } from '@angular/forms';
+import { MatSelectChange } from '@angular/material/select';
 import { getFormValidationState } from './user-event-logging.utils';
 import { UserEventTrackerService } from './user-event-tracker.service';
 
@@ -21,12 +22,12 @@ export class FormSubmitDirective {
     const values = form.getRawValue();
 
     if (isValid) {
-      this.userEventTrackerService.userEventChange$.next({
+      this.userEventTrackerService.accumulateLog$.next({
         type: 'formSubmitValid',
         values,
       });
     } else {
-      this.userEventTrackerService.userEventChange$.next({
+      this.userEventTrackerService.accumulateLog$.next({
         type: 'formSubmitInvalid',
         values,
         fieldValidity: getFormValidationState(form),
@@ -36,36 +37,67 @@ export class FormSubmitDirective {
 }
 
 @Directive({
-  selector: 'input, select, mat-select',
+  selector: 'input, textarea',
   standalone: true,
 })
-export class CommonFocusDirective {
+export class EventInputsDirective {
   private readonly userEventTrackerService = inject(UserEventTrackerService);
+  private previousValue: string | null = null;
 
   @HostListener('focus', ['$event'])
   onFocus(event: FocusEvent) {
-    const target = event.target as HTMLElement;
+    const inputTarget = event.target as HTMLInputElement | HTMLTextAreaElement;
 
-    this.userEventTrackerService.userEventChange$.next({
-      type: 'focusElement',
-      element: target.tagName,
-    });
+    // store value when focused
+    this.previousValue = inputTarget.value;
   }
 
   @HostListener('blur', ['$event'])
   onLeave(event: FocusEvent) {
-    const inputTarget = event.target as HTMLInputElement;
-    const inputText = inputTarget.value ?? inputTarget.textContent;
+    const inputTarget = event.target as HTMLInputElement | HTMLTextAreaElement;
+    const newValue = inputTarget.value;
+    const prevValue = this.previousValue;
+    const labelName = inputTarget?.labels?.[0]?.innerText?.trim() ?? 'Unknown';
 
-    // no need to track if there is no text
-    if (!inputText) {
+    // same value, no need to log
+    if (newValue === prevValue) {
       return;
     }
 
-    this.userEventTrackerService.userEventChange$.next({
-      type: 'blurElement',
-      element: inputTarget.tagName,
-      text: inputText,
+    this.userEventTrackerService.accumulateLog$.next({
+      type: 'inputChange',
+      elementType: inputTarget.tagName,
+      elementLabel: labelName,
+      value: newValue,
+    });
+
+    // update the stored value
+    this.previousValue = newValue;
+  }
+}
+
+@Directive({
+  selector: 'mat-select',
+  standalone: true,
+})
+export class EventSelectsDirective {
+  private readonly userEventTrackerService = inject(UserEventTrackerService);
+
+  @HostListener('selectionChange', ['$event'])
+  onSelectionChange(event: MatSelectChange) {
+    const selectedValue = event.value;
+    const nativeEl = event.source._elementRef.nativeElement;
+    const label =
+      nativeEl
+        ?.closest('mat-form-field')
+        ?.querySelector('mat-label')
+        ?.textContent?.trim() ?? 'Unknown';
+
+    this.userEventTrackerService.accumulateLog$.next({
+      type: 'inputChange',
+      elementLabel: label,
+      elementType: 'MAT-SELECT',
+      value: selectedValue,
     });
   }
 }
@@ -74,24 +106,31 @@ export class CommonFocusDirective {
   selector: 'button, a',
   standalone: true,
 })
-export class CommonClickDirective {
+export class EventButtonDirective {
   private readonly userEventTrackerService = inject(UserEventTrackerService);
 
   @HostListener('click', ['$event'])
   onClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const usedTarget = target.tagName === 'SPAN' ? target.parentElement : target;
+    const inputTarget = event.target as HTMLElement;
 
     // mat-button is represented as 'span'
-    this.userEventTrackerService.userEventChange$.next({
+    const usedTarget =
+      inputTarget.tagName === 'SPAN' ? inputTarget.parentElement : inputTarget;
+
+    this.userEventTrackerService.accumulateLog$.next({
       type: 'clickElement',
-      element: usedTarget?.tagName ?? '',
-      text: usedTarget?.innerText ?? '',
+      elementType: usedTarget?.tagName ?? '',
+      value: usedTarget?.innerText ?? '',
     });
   }
 }
 
-const directives = [FormSubmitDirective, CommonFocusDirective, CommonClickDirective];
+const directives = [
+  FormSubmitDirective,
+  EventInputsDirective,
+  EventButtonDirective,
+  EventSelectsDirective,
+];
 
 @NgModule({
   imports: [...directives],

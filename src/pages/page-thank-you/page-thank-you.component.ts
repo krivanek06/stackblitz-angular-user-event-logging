@@ -1,12 +1,27 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { JsonPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { UserEventTrackerService } from '../../user-event-tracker';
 
 @Component({
   selector: 'app-page-thank-you',
-  imports: [],
+  imports: [JsonPipe],
   standalone: true,
-  template: `<p>page-thank-you works!</p>`,
+  template: `
+    <div class="p-6">
+      <h2 class="text-xl">Summary:</h2>
+
+      <div class="max-h-[750px] overflow-scroll bg-gray-200 py-6">
+        <pre>
+              {{ accumulatedLogs() | json }}
+        </pre
+        >
+      </div>
+    </div>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageThankYouComponent {
-  // todo - display logs in json
+  private readonly userEventTrackerService = inject(UserEventTrackerService);
+
+  readonly accumulatedLogs = this.userEventTrackerService.accumulatedLogs;
 }

@@ -33,7 +33,7 @@ export class UserEventTrackerService {
   /**
    * accumulate every user event that happens on a page
    */
-  private readonly accumulatedLogs = toSignal(
+  readonly accumulatedLogs = toSignal(
     merge(
       merge(
         // saved triggered logs by the app
@@ -48,14 +48,10 @@ export class UserEventTrackerService {
           ),
         ),
         // close dialog log
-        this.dialog.afterAllClosed.pipe(
-          map(() => this.createLogFormat({ type: 'closeDialog' })),
-        ),
+        this.dialog.afterAllClosed.pipe(map(() => this.createLogFormat({ type: 'closeDialog' }))),
         // router change log
         this.routerChange$.pipe(
-          map((pageName) =>
-            this.createLogFormat({ type: 'routerChange', text: pageName }),
-          ),
+          map((pageName) => this.createLogFormat({ type: 'routerChange', text: pageName })),
         ),
       ).pipe(
         map((action) => ({
@@ -65,19 +61,14 @@ export class UserEventTrackerService {
       ),
       // reset logs
       this.resetLogs$.pipe(map(() => ({ type: 'reset' as const }))),
-    ).pipe(
-      scan(
-        (acc, curr) => (curr.type === 'add' ? [...acc, curr.action] : []),
-        [] as UserEvent[],
-      ),
-    ),
+    ).pipe(scan((acc, curr) => (curr.type === 'add' ? [...acc, curr.action] : []), [] as UserEvent[])),
     { initialValue: [] },
   );
 
   readonly accumulatedLogsEff = effect(() => console.log(this.accumulatedLogs()));
 
   saveLogs(): void {
-    const logChunks: number = 120;
+    const logChunks = 120;
     const logFormatChunks = this.accumulatedLogs()
       .reduce((acc: UserEvent[][], curr: UserEvent, index: number) => {
         if (index % logChunks === 0) {
@@ -126,9 +117,7 @@ export class UserEventTrackerService {
   }
 
   private getCookie(name: string): string | null {
-    const matches = document.cookie.match(
-      new RegExp('(?:^|; )' + encodeURIComponent(name) + '=([^;]*)'),
-    );
+    const matches = document.cookie.match(new RegExp('(?:^|; )' + encodeURIComponent(name) + '=([^;]*)'));
     return matches ? decodeURIComponent(matches[1]) : null;
   }
 }

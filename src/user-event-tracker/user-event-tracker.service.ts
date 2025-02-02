@@ -29,7 +29,11 @@ export class UserEventTrackerService {
       this.accumulateLog$.pipe(
         map((action) => ({
           type: 'add' as const,
-          action: this.createLogFormat(action),
+          action: {
+            ...action,
+            time: new Date().toLocaleTimeString(),
+            page: this.router.url,
+          },
         })),
       ),
       // reset logs
@@ -64,14 +68,6 @@ export class UserEventTrackerService {
     }
 
     this.resetLogs$.next();
-  }
-
-  private createLogFormat(action: LogEventAction): UserEvent {
-    return {
-      ...action,
-      time: new Date().toLocaleTimeString(),
-      page: this.router.url,
-    };
   }
 
   private sendToRemoteByFetch(body: unknown): void {

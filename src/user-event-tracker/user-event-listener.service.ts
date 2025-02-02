@@ -81,13 +81,14 @@ export class UserEventListenerService {
         }
       });
 
-      this.document.addEventListener('submit', (event) => {
-        const form = event.target as HTMLFormElement;
-        const isValid = form.checkValidity();
-
-        // todo - try to get the form group
-        //console.log('Form submit', isValid, event, form.);
-      });
+      //   this.document.addEventListener(
+      //     'submit',
+      //     (event) => {
+      //       const formElement = event.target as HTMLFormElement;
+      //       console.log(formElement);
+      //     },
+      //     true,
+      //   );
 
       // listen on input change events
       this.document.addEventListener(

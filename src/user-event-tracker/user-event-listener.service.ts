@@ -42,38 +42,37 @@ export class UserEventListenerService {
 
     this.ngZone.runOutsideAngular(() => {
       // listen on click events
-      this.document.addEventListener('click', (event) => {
-        const target = event.target as HTMLElement;
-        // console.log(event);
+      this.document.addEventListener(
+        'click',
+        (event) => {
+          const target = event.target as HTMLElement;
+          // console.log(event);
 
-        // mat-button click
-        if (target.tagName === 'SPAN') {
-          if (target?.parentElement?.tagName === 'BUTTON') {
+          if (target.tagName === 'SPAN') {
+            if (target?.parentElement?.tagName === 'BUTTON') {
+              this.userEventTrackerService.accumulateLog$.next({
+                type: 'clickElement',
+                elementType: 'BUTTON',
+                value: target?.parentElement?.ariaLabel || target?.parentElement?.innerText || 'Unknown',
+              });
+            }
+          } else if (target.tagName === 'A') {
             this.userEventTrackerService.accumulateLog$.next({
               type: 'clickElement',
-              elementType: 'BUTTON',
-              value: target?.parentElement?.ariaLabel || target?.parentElement?.innerText || 'Unknown',
+              elementType: 'LINK',
+              value: target?.ariaLabel || target?.innerText || 'Unknown',
+            });
+          } else if (target.tagName === 'MAT-OPTION') {
+            this.userEventTrackerService.accumulateLog$.next({
+              type: 'inputChange',
+              elementType: 'MAT-OPTION',
+              elementLabel: target.parentElement?.getAttribute('aria-label') ?? 'Unknown',
+              value: target?.ariaLabel || target?.innerText || 'Unknown',
             });
           }
-        }
-        // anchor click
-        else if (target.tagName === 'A') {
-          this.userEventTrackerService.accumulateLog$.next({
-            type: 'clickElement',
-            elementType: 'LINK',
-            value: target?.ariaLabel || target?.innerText || 'Unknown',
-          });
-        }
-        // mat-option click
-        else if (target.tagName === 'MAT-OPTION') {
-          this.userEventTrackerService.accumulateLog$.next({
-            type: 'inputChange',
-            elementType: 'MAT-OPTION',
-            elementLabel: target.parentElement?.getAttribute('aria-label') ?? 'Unknown',
-            value: target?.ariaLabel || target?.innerText || 'Unknown',
-          });
-        }
-      });
+        },
+        true,
+      );
 
       //   this.document.addEventListener(
       //     'submit',

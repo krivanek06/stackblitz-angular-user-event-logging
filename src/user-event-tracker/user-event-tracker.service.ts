@@ -10,19 +10,13 @@ import { LogEventAction, UserEvent } from './user-event-tracker';
 export class UserEventTrackerService {
   private readonly router = inject(Router);
 
-  /**
-   * trigger when an user event happens that we want to log
-   */
+  /** trigger when an user event happens that we want to log */
   readonly accumulateLog$ = new Subject<LogEventAction>();
 
-  /**
-   * trigger to reset the accumulated logs
-   */
+  /** trigger to reset the accumulated logs */
   private readonly resetLogs$ = new Subject<void>();
 
-  /**
-   * accumulate every user event that happens on a page
-   */
+  /** accumulate every user event that happens */
   readonly accumulatedLogs = toSignal(
     merge(
       // saved triggered logs by the app
@@ -57,7 +51,6 @@ export class UserEventTrackerService {
         return acc;
       }, [] as UserEvent[][])
       .map((logChunk, index) => ({
-        log_level: 'INFO',
         log_message: `Page Events ${index + 1}`,
         context: logChunk,
       }));
@@ -67,6 +60,7 @@ export class UserEventTrackerService {
       this.sendToRemoteByFetch(logFormat);
     }
 
+    // trigger reset all previous logs
     this.resetLogs$.next();
   }
 

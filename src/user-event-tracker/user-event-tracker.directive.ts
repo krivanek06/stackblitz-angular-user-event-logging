@@ -96,7 +96,6 @@ export class EventSelectsDirective {
   @HostListener('selectionChange', ['$event'])
   onSelectionChange(event: MatSelectChange) {
     const selectedValue = event.value;
-    // const label = event.source._elementRef.nativeElement.previousElementSibling.innerText;
     const label = event.source.ariaLabel;
 
     this.userEventTrackerService.accumulateLog$.next({
@@ -194,12 +193,12 @@ const directives = [
   EventCheckboxDirective,
 ];
 
-@NgModule({
-  imports: [...directives],
-  exports: [...directives],
-})
 // @NgModule({
-//   imports: [],
-//   exports: [],
+//   imports: [...directives],
+//   exports: [...directives],
 // })
+@NgModule({
+  imports: [],
+  exports: [],
+})
 export class UserEventTrackerModule {}

@@ -198,7 +198,7 @@ const directives = [
 //   exports: [...directives],
 // })
 @NgModule({
-  imports: [],
-  exports: [],
+  imports: [FormSubmitDirective],
+  exports: [FormSubmitDirective],
 })
 export class UserEventTrackerModule {}

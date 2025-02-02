@@ -89,6 +89,7 @@ export class UserEventListenerService {
         (event) => {
           const el = event.target as HTMLElement;
           const elType = (el as any)?.['type'];
+
           if (elType === 'checkbox') {
             this.userEventTrackerService.accumulateLog$.next({
               type: 'inputChange',

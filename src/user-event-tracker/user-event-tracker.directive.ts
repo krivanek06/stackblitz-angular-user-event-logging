@@ -192,8 +192,12 @@ const directives = [
   EventCheckboxDirective,
 ];
 
+// @NgModule({
+//   imports: [...directives],
+//   exports: [...directives],
+// })
 @NgModule({
-  imports: [...directives],
-  exports: [...directives],
+  imports: [],
+  exports: [],
 })
 export class UserEventTrackerModule {}

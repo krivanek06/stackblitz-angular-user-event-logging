@@ -1,8 +1,7 @@
 import { effect, inject, Injectable } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatDialog } from '@angular/material/dialog';
-import { NavigationEnd, Router } from '@angular/router';
-import { filter, map, merge, scan, Subject } from 'rxjs';
+import { Router } from '@angular/router';
+import { map, merge, scan, Subject } from 'rxjs';
 import { LogEventAction, UserEvent } from './user-event-tracker';
 
 @Injectable({
@@ -10,7 +9,6 @@ import { LogEventAction, UserEvent } from './user-event-tracker';
 })
 export class UserEventTrackerService {
   private readonly router = inject(Router);
-  private readonly dialog = inject(MatDialog);
 
   /**
    * trigger when an user event happens that we want to log
@@ -23,40 +21,15 @@ export class UserEventTrackerService {
   private readonly resetLogs$ = new Subject<void>();
 
   /**
-   * navigation change: page1
-   */
-  private readonly routerChange$ = this.router.events.pipe(
-    filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-    map((routerData) => routerData['url']),
-  );
-
-  /**
    * accumulate every user event that happens on a page
    */
   readonly accumulatedLogs = toSignal(
     merge(
-      merge(
-        // saved triggered logs by the app
-        this.accumulateLog$.pipe(map((action) => this.createLogFormat(action))),
-        // open dialog log
-        this.dialog.afterOpened.pipe(
-          map((dialogRef) =>
-            this.createLogFormat({
-              type: 'openDialog',
-              componentName: dialogRef.componentRef?.componentType.name ?? 'Unknown',
-            }),
-          ),
-        ),
-        // close dialog log
-        this.dialog.afterAllClosed.pipe(map(() => this.createLogFormat({ type: 'closeDialog' }))),
-        // router change log
-        this.routerChange$.pipe(
-          map((pageName) => this.createLogFormat({ type: 'routerChange', text: pageName })),
-        ),
-      ).pipe(
+      // saved triggered logs by the app
+      this.accumulateLog$.pipe(
         map((action) => ({
-          action,
           type: 'add' as const,
+          action: this.createLogFormat(action),
         })),
       ),
       // reset logs

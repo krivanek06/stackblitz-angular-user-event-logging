@@ -111,7 +111,7 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
         </mat-radio-group>
 
         <div>
-          <mat-checkbox aria-label="Checkbox LABEL">Check me!</mat-checkbox>
+          <mat-checkbox aria-label="CheckboxLABEL">Check me!</mat-checkbox>
         </div>
       </div>
 

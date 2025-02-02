@@ -51,7 +51,7 @@ export class UserEventListenerService {
       // listen on click events
       this.document.addEventListener('click', (event) => {
         const target = event.target as HTMLElement;
-        //console.log(event);
+        // console.log(event);
 
         // mat-button click
         if (target.tagName === 'SPAN') {
@@ -74,8 +74,9 @@ export class UserEventListenerService {
         // mat-option click
         else if (target.tagName === 'MAT-OPTION') {
           this.userEventTrackerService.accumulateLog$.next({
-            type: 'clickElement',
+            type: 'inputChange',
             elementType: 'MAT-OPTION',
+            elementLabel: target.parentElement?.getAttribute('aria-label') ?? 'Unknown',
             value: target?.ariaLabel || target?.innerText || 'Unknown',
           });
         }
@@ -96,7 +97,6 @@ export class UserEventListenerService {
         (event) => {
           const el = event.target as HTMLElement;
           const elType = (el as any)?.['type'];
-
           if (elType === 'checkbox') {
             this.userEventTrackerService.accumulateLog$.next({
               type: 'inputChange',
@@ -105,10 +105,11 @@ export class UserEventListenerService {
               value: (el as HTMLInputElement).checked,
             });
           } else if (elType === 'radio') {
+            const parent = el.parentElement?.parentElement?.parentElement?.parentElement;
             this.userEventTrackerService.accumulateLog$.next({
               type: 'inputChange',
               elementType: 'RADIO',
-              elementLabel: el.getAttribute('aria-label') ?? 'Unknown',
+              elementLabel: parent?.getAttribute('aria-label') ?? 'Unknown',
               value: (el as HTMLInputElement).value,
             });
           } else if (el.tagName === 'INPUT') {

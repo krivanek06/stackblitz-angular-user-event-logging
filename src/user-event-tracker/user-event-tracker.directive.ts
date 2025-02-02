@@ -146,12 +146,14 @@ export class EventButtonRadioDirective {
   @HostListener('change', ['$event'])
   onChange(event: MatRadioChange) {
     const value = event.value;
-    const label = event.source.ariaLabel;
+    const nativeEL = event.source._inputElement.nativeElement;
+    const label =
+      nativeEL.parentElement?.parentElement?.parentElement?.parentElement?.getAttribute('aria-label');
 
     this.userEventTrackerService.accumulateLog$.next({
       type: 'inputChange',
       elementType: 'MAT-RADIO',
-      elementLabel: label,
+      elementLabel: label ?? 'Unknown',
       value: value,
     });
   }
@@ -192,12 +194,12 @@ const directives = [
   EventCheckboxDirective,
 ];
 
-// @NgModule({
-//   imports: [...directives],
-//   exports: [...directives],
-// })
 @NgModule({
-  imports: [],
-  exports: [],
+  imports: [...directives],
+  exports: [...directives],
 })
+// @NgModule({
+//   imports: [],
+//   exports: [],
+// })
 export class UserEventTrackerModule {}

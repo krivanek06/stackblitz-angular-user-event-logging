@@ -17,14 +17,6 @@ export class UserEventListenerService {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
-  /**
-   * navigation change: page1
-   */
-  private readonly routerChange$ = this.router.events.pipe(
-    filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-    map((routerData) => routerData['url']),
-  );
-
   start() {
     merge(
       // open dialog log
@@ -40,8 +32,9 @@ export class UserEventListenerService {
       // close dialog log
       this.dialog.afterAllClosed.pipe(map(() => ({ type: 'closeDialog' }) satisfies LogEventAction)),
       // router change log
-      this.routerChange$.pipe(
-        map((pageName) => ({ type: 'routerChange', text: pageName }) satisfies LogEventAction),
+      this.router.events.pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        map((routerData) => ({ type: 'routerChange', text: routerData['url'] }) satisfies LogEventAction),
       ),
     )
       .pipe(takeUntilDestroyed())

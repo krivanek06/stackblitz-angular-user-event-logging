@@ -38,6 +38,11 @@ export type LogEventAction =
       type: 'formSubmitInvalid';
       values: Record<string, string>;
       fieldValidity: unknown;
+    }
+  | {
+      type: 'custom';
+      value: unknown;
+      information?: string;
     };
 
 export type UserEvent = {

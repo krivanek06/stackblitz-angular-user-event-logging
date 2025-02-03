@@ -48,38 +48,18 @@ export class FormSubmitDirective {
 })
 export class EventInputsDirective {
   private readonly userEventTrackerService = inject(UserEventTrackerService);
-  private previousValue: string | null = null;
 
-  @HostListener('focus', ['$event'])
+  @HostListener('change', ['$event'])
   onFocus(event: FocusEvent) {
     const inputTarget = event.target as HTMLInputElement | HTMLTextAreaElement;
-
-    // store value when focused
-    this.previousValue = inputTarget.value;
-  }
-
-  @HostListener('blur', ['$event'])
-  onLeave(event: FocusEvent) {
-    const inputTarget = event.target as HTMLInputElement | HTMLTextAreaElement;
-    const newValue = inputTarget.value;
-    const prevValue = this.previousValue;
-    // const labelName = inputTarget?.labels?.[0]?.innerText?.trim() ?? 'Unknown';
     const labelName = inputTarget.ariaLabel ?? inputTarget?.labels?.[0]?.innerText?.trim() ?? 'Unknown';
-
-    // same value, no need to log
-    if (newValue === prevValue) {
-      return;
-    }
 
     this.userEventTrackerService.accumulateLog$.next({
       type: 'inputChange',
       elementType: inputTarget.tagName,
       elementLabel: labelName,
-      value: newValue,
+      value: inputTarget.value,
     });
-
-    // update the stored value
-    this.previousValue = newValue;
   }
 }
 

@@ -100,18 +100,18 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
       <!-- example html elements -->
       <div class="border p-4">
         <h2>Example HTML elements</h2>
-        <mat-radio-group aria-label="RadioLabel 1">
+        <mat-radio-group formControlName="radioButtonField1" aria-label="RadioLabel 1">
           <mat-radio-button value="1">Option 1</mat-radio-button>
           <mat-radio-button value="2">Option 2</mat-radio-button>
         </mat-radio-group>
 
-        <mat-radio-group aria-label="RadioLabel 2">
+        <mat-radio-group formControlName="radioButtonField2" aria-label="RadioLabel 2">
           <mat-radio-button value="3">Option 3</mat-radio-button>
           <mat-radio-button value="4">Option 4</mat-radio-button>
         </mat-radio-group>
 
         <div>
-          <mat-checkbox aria-label="CheckboxLABEL">Check me!</mat-checkbox>
+          <mat-checkbox formControlName="checkboxField" aria-label="CheckboxLABEL">Check me!</mat-checkbox>
         </div>
       </div>
 
@@ -149,6 +149,9 @@ export class PageWelcomeComponent {
         quantity: this.fb.nonNullable.control('', [Validators.required, Validators.min(1)]),
       }),
     ]),
+    radioButtonField1: this.fb.nonNullable.control(''),
+    radioButtonField2: this.fb.nonNullable.control(''),
+    checkboxField: this.fb.nonNullable.control(false),
   });
 
   onSubmit() {

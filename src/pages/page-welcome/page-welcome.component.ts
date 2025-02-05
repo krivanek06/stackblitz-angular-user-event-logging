@@ -67,7 +67,7 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
 
         <mat-form-field>
           <mat-label>Username</mat-label>
-          <input aria-label="Password" matInput formControlName="username" />
+          <input aria-label="Username" matInput formControlName="username" />
         </mat-form-field>
 
         <mat-form-field>
@@ -91,7 +91,7 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
 
             <mat-form-field>
               <mat-label>Quantity</mat-label>
-              <input aria-label="ItemName" matInput formControlName="quantity" />
+              <input aria-label="ItemQuantity" matInput formControlName="quantity" />
             </mat-form-field>
           </div>
         }

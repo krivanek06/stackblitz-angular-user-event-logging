@@ -2,7 +2,6 @@ import { Directive, HostListener, inject, NgModule } from '@angular/core';
 import { FormGroupDirective } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatRadioChange } from '@angular/material/radio';
-import { MatSelectChange } from '@angular/material/select';
 import { getFormValidationState } from './user-event-logging.utils';
 import { UserEventTrackerService } from './user-event-tracker.service';
 
@@ -52,7 +51,8 @@ export class EventInputsDirective {
   @HostListener('change', ['$event'])
   onFocus(event: FocusEvent) {
     const inputTarget = event.target as HTMLInputElement | HTMLTextAreaElement;
-    const labelName = inputTarget.ariaLabel ?? inputTarget?.labels?.[0]?.innerText?.trim() ?? 'Unknown';
+    const labelName =
+      inputTarget.dataset['label'] ?? inputTarget?.labels?.[0]?.innerText?.trim() ?? 'Unknown';
 
     this.userEventTrackerService.accumulateLog$.next({
       type: 'inputChange',
@@ -67,16 +67,17 @@ export class EventInputsDirective {
 
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
-  selector: 'mat-select',
+  selector: 'mat-option',
   standalone: true,
 })
 export class EventSelectsDirective {
   private readonly userEventTrackerService = inject(UserEventTrackerService);
 
-  @HostListener('selectionChange', ['$event'])
-  onSelectionChange(event: MatSelectChange) {
-    const selectedValue = event.value;
-    const label = event.source.ariaLabel;
+  @HostListener('click', ['$event'])
+  onSelectionChange(event: PointerEvent) {
+    const target = event.target as HTMLElement;
+    const selectedValue = target.innerText;
+    const label = target?.dataset['label'] ?? target?.innerText ?? 'Unknown';
 
     this.userEventTrackerService.accumulateLog$.next({
       type: 'inputChange',
@@ -107,7 +108,7 @@ export class EventButtonDirective {
     this.userEventTrackerService.accumulateLog$.next({
       type: 'clickElement',
       elementType: usedTarget?.tagName ?? '',
-      value: usedTarget?.ariaLabel || usedTarget?.innerText || 'Unknown',
+      value: usedTarget?.dataset['label'] || usedTarget?.innerText || 'Unknown',
     });
   }
 }
@@ -126,8 +127,7 @@ export class EventButtonRadioDirective {
   onChange(event: MatRadioChange) {
     const value = event.value;
     const nativeEL = event.source._inputElement.nativeElement;
-    const label =
-      nativeEL.parentElement?.parentElement?.parentElement?.parentElement?.getAttribute('aria-label');
+    const label = nativeEL.parentElement?.parentElement?.parentElement?.parentElement?.dataset['label'];
 
     this.userEventTrackerService.accumulateLog$.next({
       type: 'inputChange',
@@ -151,7 +151,7 @@ export class EventCheckboxDirective {
   @HostListener('change', ['$event'])
   onChange(event: MatCheckboxChange) {
     const value = event.checked;
-    const label = event.source.ariaLabel;
+    const label = event.source._elementRef.nativeElement.dataset['label'] ?? 'Unknown';
 
     this.userEventTrackerService.accumulateLog$.next({
       type: 'inputChange',

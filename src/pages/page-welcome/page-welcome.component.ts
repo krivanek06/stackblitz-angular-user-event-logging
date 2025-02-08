@@ -44,21 +44,22 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
 
     <div>
       Link:
-      <a href="#" (click)="$event.preventDefault()">reactive-forms</a>
-      or open dialog <button mat-button (click)="openDialog()">open dialog</button>
+      <a href="#" (click)="$event.preventDefault()" data-label="link-to-reactive-label">reactive-forms</a>
+      or open dialog
+      <button mat-button data-label="open-dialog-label" (click)="openDialog()">open dialog</button>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="grid gap-4">
       <!-- email -->
       <mat-form-field>
         <mat-label>Email</mat-label>
-        <input aria-label="Email" matInput formControlName="email" />
+        <input data-label="EmailLabel" matInput formControlName="email" />
       </mat-form-field>
 
       <!-- password -->
       <mat-form-field>
         <mat-label>Password</mat-label>
-        <input aria-label="Password" matInput formControlName="password" />
+        <input data-label="PasswordLabel" matInput formControlName="password" />
       </mat-form-field>
 
       <!-- character -->
@@ -67,14 +68,14 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
 
         <mat-form-field>
           <mat-label>Username</mat-label>
-          <input aria-label="Username" matInput formControlName="username" />
+          <input data-label="UsernameLabel" matInput formControlName="username" />
         </mat-form-field>
 
         <mat-form-field>
           <mat-label>Gender</mat-label>
-          <mat-select aria-label="Gender" formControlName="gender">
-            <mat-option value="man">Man</mat-option>
-            <mat-option value="woman">Woman</mat-option>
+          <mat-select formControlName="gender">
+            <mat-option data-label="GenderLabel" value="man">Man</mat-option>
+            <mat-option data-label="GenderLabel" value="woman">Woman</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -86,12 +87,12 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
           <div [formGroupName]="i" class="flex gap-6">
             <mat-form-field>
               <mat-label>Name</mat-label>
-              <input aria-label="ItemName" matInput formControlName="name" />
+              <input data-label="ItemNameLabel" matInput formControlName="name" />
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>Quantity</mat-label>
-              <input aria-label="ItemQuantity" matInput formControlName="quantity" />
+              <input data-label="ItemQuantityLabel" matInput formControlName="quantity" />
             </mat-form-field>
           </div>
         }
@@ -100,22 +101,22 @@ import { UserEventTrackerModule } from '../../user-event-tracker';
       <!-- example html elements -->
       <div class="border p-4">
         <h2>Example HTML elements</h2>
-        <mat-radio-group formControlName="radioButtonField1" aria-label="RadioLabel 1">
+        <mat-radio-group formControlName="radioButtonField1" data-label="RadioLabel 1">
           <mat-radio-button value="1">Option 1</mat-radio-button>
           <mat-radio-button value="2">Option 2</mat-radio-button>
         </mat-radio-group>
 
-        <mat-radio-group formControlName="radioButtonField2" aria-label="RadioLabel 2">
+        <mat-radio-group formControlName="radioButtonField2" data-label="RadioLabel 2">
           <mat-radio-button value="3">Option 3</mat-radio-button>
           <mat-radio-button value="4">Option 4</mat-radio-button>
         </mat-radio-group>
 
         <div>
-          <mat-checkbox formControlName="checkboxField" aria-label="CheckboxLABEL">Check me!</mat-checkbox>
+          <mat-checkbox formControlName="checkboxField" data-label="CheckboxLabel">Check me!</mat-checkbox>
         </div>
       </div>
 
-      <button aria-label="SubmitButton" mat-stroked-button type="submit">Submit</button>
+      <button data-label="SubmitButtonLabel" mat-stroked-button type="submit">Submit</button>
     </form>
 
     <!-- dialog template -->

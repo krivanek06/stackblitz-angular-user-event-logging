@@ -53,21 +53,22 @@ export class UserEventListenerService {
               this.userEventTrackerService.accumulateLog$.next({
                 type: 'clickElement',
                 elementType: 'BUTTON',
-                value: target?.parentElement?.ariaLabel || target?.parentElement?.innerText || 'Unknown',
+                value:
+                  target?.parentElement?.dataset['label'] || target?.parentElement?.innerText || 'Unknown',
               });
             }
           } else if (target.tagName === 'A') {
             this.userEventTrackerService.accumulateLog$.next({
               type: 'clickElement',
               elementType: 'LINK',
-              value: target?.ariaLabel || target?.innerText || 'Unknown',
+              value: target?.dataset['label'] || target?.innerText || 'Unknown',
             });
           } else if (target.tagName === 'MAT-OPTION') {
             this.userEventTrackerService.accumulateLog$.next({
               type: 'inputChange',
               elementType: 'MAT-OPTION',
-              elementLabel: target.parentElement?.getAttribute('aria-label') ?? 'Unknown',
-              value: target?.ariaLabel || target?.innerText || 'Unknown',
+              elementLabel: target?.dataset['label'] ?? 'Unknown',
+              value: target?.innerText || 'Unknown',
             });
           }
         },
@@ -94,7 +95,7 @@ export class UserEventListenerService {
             this.userEventTrackerService.accumulateLog$.next({
               type: 'inputChange',
               elementType: 'CHECKBOX',
-              elementLabel: el.getAttribute('aria-label') ?? 'Unknown',
+              elementLabel: el.parentElement?.parentElement?.parentElement?.dataset['label'] ?? 'Unknown',
               value: (el as HTMLInputElement).checked,
             });
           } else if (elType === 'radio') {
@@ -102,14 +103,14 @@ export class UserEventListenerService {
             this.userEventTrackerService.accumulateLog$.next({
               type: 'inputChange',
               elementType: 'RADIO',
-              elementLabel: parent?.getAttribute('aria-label') ?? 'Unknown',
+              elementLabel: parent?.dataset['label'] ?? 'Unknown',
               value: (el as HTMLInputElement).value,
             });
           } else if (el.tagName === 'INPUT') {
             this.userEventTrackerService.accumulateLog$.next({
               type: 'inputChange',
               elementType: 'INPUT',
-              elementLabel: el.getAttribute('aria-label') ?? 'Unknown',
+              elementLabel: el.dataset['label'] ?? 'Unknown',
               value: (el as HTMLInputElement).value,
             });
           }

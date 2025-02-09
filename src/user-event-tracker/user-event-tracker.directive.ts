@@ -1,4 +1,4 @@
-import { Directive, HostListener, inject, NgModule } from '@angular/core';
+import { Directive, inject, NgModule } from '@angular/core';
 import { FormGroupDirective } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatRadioChange } from '@angular/material/radio';
@@ -46,19 +46,21 @@ export class FormSubmitDirective {
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'input, textarea',
   standalone: true,
+  host: {
+    '(change)': 'onChange($event)',
+  },
 })
 export class EventInputsDirective {
   private readonly userEventTrackerService = inject(UserEventTrackerService);
 
-  @HostListener('change', ['$event'])
-  onFocus(event: FocusEvent) {
+  onChange(event: FocusEvent) {
     const inputTarget = event.target as HTMLInputElement | HTMLTextAreaElement;
     const labelName =
       inputTarget.dataset['label'] ?? inputTarget?.labels?.[0]?.innerText?.trim() ?? 'Unknown';
 
     this.userEventTrackerService.createLog({
       type: 'inputChange',
-      elementType: inputTarget.tagName,
+      elementType: `DIRECTIVE-${inputTarget.tagName}`,
       elementLabel: labelName,
       value: inputTarget.value,
     });
@@ -86,7 +88,7 @@ export class EventSelectsDirective {
     this.userEventTrackerService.createLog({
       type: 'inputChange',
       elementLabel: label,
-      elementType: 'MAT-SELECT',
+      elementType: 'DIRECTIVE-MAT-SELECT',
       value: selectedValue,
     });
   }
@@ -113,7 +115,7 @@ export class EventButtonDirective {
 
     this.userEventTrackerService.createLog({
       type: 'clickElement',
-      elementType: usedTarget?.tagName ?? '',
+      elementType: `DIRECTIVE-${usedTarget?.tagName ?? ''}`,
       value: usedTarget?.dataset['label'] || usedTarget?.innerText || 'Unknown',
     });
   }
@@ -139,7 +141,7 @@ export class EventButtonRadioDirective {
 
     this.userEventTrackerService.createLog({
       type: 'inputChange',
-      elementType: 'MAT-RADIO',
+      elementType: 'DIRECTIVE-MAT-RADIO',
       elementLabel: label ?? 'Unknown',
       value: value,
     });
@@ -165,7 +167,7 @@ export class EventCheckboxDirective {
 
     this.userEventTrackerService.createLog({
       type: 'inputChange',
-      elementType: 'MAT-CHECKBOX',
+      elementType: 'DIRECTIVE-MAT-CHECKBOX',
       elementLabel: label,
       value: value,
     });

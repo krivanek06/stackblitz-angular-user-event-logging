@@ -12,12 +12,14 @@ import { UserEventTrackerService } from './user-event-tracker.service';
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'form[formGroup]',
   standalone: true,
+  host: {
+    '(ngSubmit)': 'onSubmit()',
+  },
 })
 export class FormSubmitDirective {
   private readonly formGroupDirective = inject(FormGroupDirective);
   private readonly userEventTrackerService = inject(UserEventTrackerService);
 
-  @HostListener('ngSubmit')
   onSubmit() {
     const form = this.formGroupDirective.form;
     const isValid = form.valid;
@@ -69,11 +71,13 @@ export class EventInputsDirective {
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'mat-option',
   standalone: true,
+  host: {
+    '(click)': 'onSelectionChange($event)',
+  },
 })
 export class EventSelectsDirective {
   private readonly userEventTrackerService = inject(UserEventTrackerService);
 
-  @HostListener('click', ['$event'])
   onSelectionChange(event: PointerEvent) {
     const target = event.target as HTMLElement;
     const selectedValue = target.innerText;
@@ -94,11 +98,13 @@ export class EventSelectsDirective {
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'button, a',
   standalone: true,
+  host: {
+    '(click)': 'onClick($event)',
+  },
 })
 export class EventButtonDirective {
   private readonly userEventTrackerService = inject(UserEventTrackerService);
 
-  @HostListener('click', ['$event'])
   onClick(event: MouseEvent) {
     const inputTarget = event.target as HTMLElement;
 
@@ -119,11 +125,13 @@ export class EventButtonDirective {
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'mat-radio-group',
   standalone: true,
+  host: {
+    '(change)': 'onChange($event)',
+  },
 })
 export class EventButtonRadioDirective {
   private readonly userEventTrackerService = inject(UserEventTrackerService);
 
-  @HostListener('change', ['$event'])
   onChange(event: MatRadioChange) {
     const value = event.value;
     const nativeEL = event.source._inputElement.nativeElement;
@@ -144,11 +152,13 @@ export class EventButtonRadioDirective {
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'mat-checkbox',
   standalone: true,
+  host: {
+    '(change)': 'onChange($event)',
+  },
 })
 export class EventCheckboxDirective {
   private readonly userEventTrackerService = inject(UserEventTrackerService);
 
-  @HostListener('change', ['$event'])
   onChange(event: MatCheckboxChange) {
     const value = event.checked;
     const label = event.source._elementRef.nativeElement.dataset['label'] ?? 'Unknown';

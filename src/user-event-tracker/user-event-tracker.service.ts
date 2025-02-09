@@ -50,7 +50,7 @@ export class UserEventTrackerService {
   /**
    * sends all accumulated logs to the server
    */
-  saveLogsRemote(): void {
+  saveLogs(): void {
     const logChunks = 120;
     const logFormatChunks = this.accumulatedLogs()
       .reduce((acc: UserEvent[][], curr: UserEvent, index: number) => {

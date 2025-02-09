@@ -24,7 +24,7 @@ export class App {
 
   @HostListener('window:beforeunload')
   onPageRefresh() {
-    this.userEventTrackerService.saveLogsRemote();
+    this.userEventTrackerService.saveLogs();
   }
 }
 

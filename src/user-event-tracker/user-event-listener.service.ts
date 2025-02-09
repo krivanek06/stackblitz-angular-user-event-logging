@@ -1,6 +1,5 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, Injectable, NgZone } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map, merge } from 'rxjs';
@@ -36,9 +35,7 @@ export class UserEventListenerService {
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
         map((routerData) => ({ type: 'routerChange', text: routerData['url'] }) satisfies LogEventAction),
       ),
-    )
-      .pipe(takeUntilDestroyed())
-      .subscribe((res) => this.userEventTrackerService.accumulateLog$.next(res));
+    ).subscribe((res) => this.userEventTrackerService.createLog(res));
 
     this.ngZone.runOutsideAngular(() => {
       // listen on click events
@@ -50,7 +47,7 @@ export class UserEventListenerService {
 
           if (target.tagName === 'SPAN') {
             if (target?.parentElement?.tagName === 'BUTTON') {
-              this.userEventTrackerService.accumulateLog$.next({
+              this.userEventTrackerService.createLog({
                 type: 'clickElement',
                 elementType: 'BUTTON',
                 value:
@@ -58,13 +55,13 @@ export class UserEventListenerService {
               });
             }
           } else if (target.tagName === 'A') {
-            this.userEventTrackerService.accumulateLog$.next({
+            this.userEventTrackerService.createLog({
               type: 'clickElement',
               elementType: 'LINK',
               value: target?.dataset['label'] || target?.innerText || 'Unknown',
             });
           } else if (target.tagName === 'MAT-OPTION') {
-            this.userEventTrackerService.accumulateLog$.next({
+            this.userEventTrackerService.createLog({
               type: 'inputChange',
               elementType: 'MAT-OPTION',
               elementLabel: target?.dataset['label'] ?? 'Unknown',
@@ -92,7 +89,7 @@ export class UserEventListenerService {
           const elType = (el as any)?.['type'];
 
           if (elType === 'checkbox') {
-            this.userEventTrackerService.accumulateLog$.next({
+            this.userEventTrackerService.createLog({
               type: 'inputChange',
               elementType: 'CHECKBOX',
               elementLabel: el.parentElement?.parentElement?.parentElement?.dataset['label'] ?? 'Unknown',
@@ -100,14 +97,14 @@ export class UserEventListenerService {
             });
           } else if (elType === 'radio') {
             const parent = el.parentElement?.parentElement?.parentElement?.parentElement;
-            this.userEventTrackerService.accumulateLog$.next({
+            this.userEventTrackerService.createLog({
               type: 'inputChange',
               elementType: 'RADIO',
               elementLabel: parent?.dataset['label'] ?? 'Unknown',
               value: (el as HTMLInputElement).value,
             });
           } else if (el.tagName === 'INPUT') {
-            this.userEventTrackerService.accumulateLog$.next({
+            this.userEventTrackerService.createLog({
               type: 'inputChange',
               elementType: 'INPUT',
               elementLabel: el.dataset['label'] ?? 'Unknown',

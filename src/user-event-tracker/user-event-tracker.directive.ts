@@ -24,12 +24,12 @@ export class FormSubmitDirective {
     const values = form.getRawValue();
 
     if (isValid) {
-      this.userEventTrackerService.accumulateLog$.next({
+      this.userEventTrackerService.createLog({
         type: 'formSubmitValid',
         values,
       });
     } else {
-      this.userEventTrackerService.accumulateLog$.next({
+      this.userEventTrackerService.createLog({
         type: 'formSubmitInvalid',
         values,
         fieldValidity: getFormValidationState(form),
@@ -54,7 +54,7 @@ export class EventInputsDirective {
     const labelName =
       inputTarget.dataset['label'] ?? inputTarget?.labels?.[0]?.innerText?.trim() ?? 'Unknown';
 
-    this.userEventTrackerService.accumulateLog$.next({
+    this.userEventTrackerService.createLog({
       type: 'inputChange',
       elementType: inputTarget.tagName,
       elementLabel: labelName,
@@ -79,7 +79,7 @@ export class EventSelectsDirective {
     const selectedValue = target.innerText;
     const label = target?.dataset['label'] ?? target?.innerText ?? 'Unknown';
 
-    this.userEventTrackerService.accumulateLog$.next({
+    this.userEventTrackerService.createLog({
       type: 'inputChange',
       elementLabel: label,
       elementType: 'MAT-SELECT',
@@ -105,7 +105,7 @@ export class EventButtonDirective {
     // mat-button is represented as 'span'
     const usedTarget = inputTarget.tagName === 'SPAN' ? inputTarget.parentElement : inputTarget;
 
-    this.userEventTrackerService.accumulateLog$.next({
+    this.userEventTrackerService.createLog({
       type: 'clickElement',
       elementType: usedTarget?.tagName ?? '',
       value: usedTarget?.dataset['label'] || usedTarget?.innerText || 'Unknown',
@@ -129,7 +129,7 @@ export class EventButtonRadioDirective {
     const nativeEL = event.source._inputElement.nativeElement;
     const label = nativeEL.parentElement?.parentElement?.parentElement?.parentElement?.dataset['label'];
 
-    this.userEventTrackerService.accumulateLog$.next({
+    this.userEventTrackerService.createLog({
       type: 'inputChange',
       elementType: 'MAT-RADIO',
       elementLabel: label ?? 'Unknown',
@@ -153,7 +153,7 @@ export class EventCheckboxDirective {
     const value = event.checked;
     const label = event.source._elementRef.nativeElement.dataset['label'] ?? 'Unknown';
 
-    this.userEventTrackerService.accumulateLog$.next({
+    this.userEventTrackerService.createLog({
       type: 'inputChange',
       elementType: 'MAT-CHECKBOX',
       elementLabel: label,

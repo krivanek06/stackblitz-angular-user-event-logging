@@ -1,9 +1,4 @@
-import {
-  HttpEvent,
-  HttpEventType,
-  HttpHandlerFn,
-  HttpRequest,
-} from '@angular/common/http';
+import { HttpEvent, HttpEventType, HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { UserEventTrackerService } from './user-event-tracker.service';
@@ -21,14 +16,14 @@ export const userEventLoggingInterceptorProvider = (
     tap((event) => {
       // send http event
       if (event.type === HttpEventType.Sent) {
-        trackingService.accumulateLog$.next({
+        trackingService.createLog({
           type: 'apiCall',
           url: req.urlWithParams,
         });
       }
       // receive http event
       else if (event.type === HttpEventType.Response) {
-        trackingService.accumulateLog$.next({
+        trackingService.createLog({
           type: 'apiResponse',
           url: req.urlWithParams,
           status: event.status,

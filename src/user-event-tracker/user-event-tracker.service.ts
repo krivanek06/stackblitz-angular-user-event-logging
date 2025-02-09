@@ -11,7 +11,7 @@ export class UserEventTrackerService {
   private readonly router = inject(Router);
 
   /** trigger when an user event happens that we want to log */
-  readonly accumulateLog$ = new Subject<LogEventAction>();
+  private readonly accumulateLog$ = new Subject<LogEventAction>();
 
   /** trigger to reset the accumulated logs */
   private readonly resetLogs$ = new Subject<void>();
@@ -38,7 +38,19 @@ export class UserEventTrackerService {
 
   readonly accumulatedLogsEff = effect(() => console.log(this.accumulatedLogs()));
 
-  saveLogs(): void {
+  /**
+   * create a log event and accumulate it
+   *
+   * @param action - the user event that we want to log
+   */
+  createLog(action: LogEventAction): void {
+    this.accumulateLog$.next(action);
+  }
+
+  /**
+   * sends all accumulated logs to the server
+   */
+  saveLogsRemote(): void {
     const logChunks = 120;
     const logFormatChunks = this.accumulatedLogs()
       .reduce((acc: UserEvent[][], curr: UserEvent, index: number) => {
